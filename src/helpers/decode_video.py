@@ -2,28 +2,35 @@ import numpy as np
 from typing import List, Tuple, Optional
 from PIL import Image
 import torch
-
-# We use MoviePy as the default decoder. It bundles FFmpeg (via imageio-ffmpeg),
-# which is friendlier on student machines and Streamlit Cloud than system ffmpeg.
-try:
-    from moviepy.editor import VideoFileClip
-except ImportError:
-    from moviepy import VideoFileClip
+import cv2
 
 def get_video_info(path: str) -> Tuple[float, float, Tuple[int,int]]:
     """Return (duration_sec, fps, (width, height))."""
-    clip = VideoFileClip(path)
-    return float(clip.duration), float(clip.fps), (int(clip.w), int(clip.h))
+    cap = cv2.VideoCapture(path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    duration = frame_count / fps if fps > 0 else 0
+    cap.release()
+    return float(duration), float(fps), (width, height)
 
 def sample_frames(path: str, fps: int = 4, resize: int = 224) -> List[torch.Tensor]:
     """Sample RGB frames at a lower FPS and return normalized torch tensors [3,H,W]."""
-    clip = VideoFileClip(path)
-    step = max(int(round(clip.fps / fps)), 1)
+    cap = cv2.VideoCapture(path)
+    video_fps = cap.get(cv2.CAP_PROP_FPS)
+    step = max(int(round(video_fps / fps)), 1)
     frames = []
     idx = 0
-    for frame in clip.iter_frames():
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
         if idx % step == 0:
-            img = Image.fromarray(frame).convert("RGB")
+            # Convert BGR to RGB
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(frame_rgb).convert("RGB")
             if resize:
                 img = img.resize((resize, resize))
             arr = np.asarray(img).astype("float32") / 255.0
@@ -34,6 +41,8 @@ def sample_frames(path: str, fps: int = 4, resize: int = 224) -> List[torch.Tens
             arr = np.transpose(arr, (2,0,1))  # [3,H,W]
             frames.append(torch.from_numpy(arr))
         idx += 1
+
+    cap.release()
     return frames
 
 def frame_diff_stack(frames: List[torch.Tensor], k: int = 3) -> torch.Tensor:
