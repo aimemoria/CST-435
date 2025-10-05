@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# Data files
+*.pt
+*.pth
+*.mp4
+*.wav
+data/dataset_windows.pt
+
+# Temporary files
+*.log
+.DS_Store
+tmp/
+
+# Don't run these as the main app
+create_test_video.py
+add_audio_to_video.py

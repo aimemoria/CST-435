@@ -5,9 +5,24 @@ from torchvision import models
 
 class VisionCNN(nn.Module):
     """Image branch: ResNet18 trunk → projection."""
-    def __init__(self, out_dim: int = 128, train_backbone: bool = False):
+    def __init__(self, out_dim: int = 128, train_backbone: bool = False, in_channels: int = 3):
         super().__init__()
         m = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
+
+        # If input channels != 3, we need to modify the first conv layer
+        if in_channels != 3:
+            # Create new first conv layer with correct input channels
+            original_conv = m.conv1
+            m.conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            # Initialize weights by averaging across the extra channels or repeating
+            with torch.no_grad():
+                if in_channels > 3:
+                    # Repeat the original weights across new channels
+                    m.conv1.weight[:, :3] = original_conv.weight
+                    m.conv1.weight[:, 3:] = original_conv.weight.repeat(1, in_channels // 3, 1, 1)[:, :(in_channels-3)]
+                else:
+                    m.conv1.weight = original_conv.weight[:, :in_channels]
+
         self.backbone = nn.Sequential(*list(m.children())[:-1])  # [B,512,1,1]
         if not train_backbone:
             for p in self.backbone.parameters():
@@ -36,9 +51,9 @@ class AudioCNN(nn.Module):
 
 class ExplexNet(nn.Module):
     """Explosion-or-Explanation classifier (late fusion)."""
-    def __init__(self, vid_dim: int = 128, aud_dim: int = 128):
+    def __init__(self, vid_dim: int = 128, aud_dim: int = 128, vid_in_channels: int = 9):
         super().__init__()
-        self.vision = VisionCNN(out_dim=vid_dim)
+        self.vision = VisionCNN(out_dim=vid_dim, in_channels=vid_in_channels)
         self.audio  = AudioCNN(out_dim=aud_dim)
         self.classifier = nn.Sequential(
             nn.Linear(vid_dim + aud_dim, 128),

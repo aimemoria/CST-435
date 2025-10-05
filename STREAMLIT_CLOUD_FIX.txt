@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════════════
+  🚨 STREAMLIT CLOUD DEPLOYMENT - QUICK FIX GUIDE
+═══════════════════════════════════════════════════════════════════════
+
+PROBLEM:
+Your Streamlit Cloud app is trying to run "create_test_video.py"
+instead of the main application file.
+
+SOLUTION:
+Change the main file path in Streamlit Cloud settings.
+
+═══════════════════════════════════════════════════════════════════════
+  ✅ STEP-BY-STEP FIX
+═══════════════════════════════════════════════════════════════════════
+
+1. Go to: https://share.streamlit.io/
+
+2. Find your app in the dashboard
+
+3. Click the THREE DOTS (⋮) next to your app name
+
+4. Select "SETTINGS"
+
+5. Find "Main file path" field
+
+6. CHANGE IT TO: streamlit_app.py
+
+7. Click "SAVE"
+
+8. Click "REBOOT APP" or wait for auto-restart
+
+═══════════════════════════════════════════════════════════════════════
+  📁 WHAT'S CHANGED IN YOUR REPOSITORY
+═══════════════════════════════════════════════════════════════════════
+
+NEW FILES CREATED:
+  ✅ streamlit_app.py          - Main app for Streamlit Cloud
+  ✅ packages.txt              - System dependencies (ffmpeg, OpenCV)
+  ✅ .streamlit/config.toml    - Streamlit configuration
+  ✅ .gitignore                - Git ignore rules
+  ✅ DEPLOYMENT_GUIDE.md       - Full deployment instructions
+
+FILES RENAMED:
+  ✅ create_test_video.py   →  _create_test_video.py
+  ✅ add_audio_to_video.py  →  _add_audio_to_video.py
+     (These were helper scripts, NOT the main app)
+
+═══════════════════════════════════════════════════════════════════════
+  🔄 IF YOU NEED TO UPDATE YOUR GITHUB REPO
+═══════════════════════════════════════════════════════════════════════
+
+cd AIT-204-CNN-explosion-or-explanation
+git add .
+git commit -m "Fix: Rename helper scripts and add streamlit_app.py"
+git push
+
+Then Streamlit Cloud will auto-detect streamlit_app.py!
+
+═══════════════════════════════════════════════════════════════════════
+  🧪 VERIFY IT WORKS LOCALLY FIRST
+═══════════════════════════════════════════════════════════════════════
+
+Test command:
+  streamlit run streamlit_app.py
+
+If this works → It will work on Streamlit Cloud (once configured)
+
+Current status:
+  ✅ streamlit_app.py is tested and WORKING at http://localhost:8502
+
+═══════════════════════════════════════════════════════════════════════
+  💡 WHY THIS HAPPENED
+═══════════════════════════════════════════════════════════════════════
+
+Streamlit Cloud auto-detects the main file by looking for:
+  1. streamlit_app.py (priority 1)
+  2. app.py (priority 2)
+  3. Any other .py file (priority 3)
+
+Your repository had "create_test_video.py" which was detected
+as the main app file. By renaming it to "_create_test_video.py",
+Streamlit Cloud will now find "streamlit_app.py" instead.
+
+═══════════════════════════════════════════════════════════════════════
+  ✨ EXPECTED RESULT AFTER FIX
+═══════════════════════════════════════════════════════════════════════
+
+Your Streamlit Cloud app should:
+  ✅ Load successfully
+  ✅ Show the "Explosion or Explanation" interface
+  ✅ Allow video uploads
+  ✅ Display probability charts
+  ✅ Show explosion/explanation predictions
+
+═══════════════════════════════════════════════════════════════════════
+
+Need help? Check:
+  📖 DEPLOYMENT_GUIDE.md - Full deployment instructions
+  📖 README_DEPLOYMENT.md - Deployment troubleshooting
+
+═══════════════════════════════════════════════════════════════════════

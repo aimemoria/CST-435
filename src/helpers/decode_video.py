@@ -5,7 +5,10 @@ import torch
 
 # We use MoviePy as the default decoder. It bundles FFmpeg (via imageio-ffmpeg),
 # which is friendlier on student machines and Streamlit Cloud than system ffmpeg.
-from moviepy.editor import VideoFileClip
+try:
+    from moviepy.editor import VideoFileClip
+except ImportError:
+    from moviepy import VideoFileClip
 
 def get_video_info(path: str) -> Tuple[float, float, Tuple[int,int]]:
     """Return (duration_sec, fps, (width, height))."""

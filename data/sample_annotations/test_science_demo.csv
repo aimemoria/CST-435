@@ -1,0 +1,9 @@
+video_id,start_sec,end_sec,event_type
+test_science_demo,0.0,5.0,explanation
+test_science_demo,5.0,8.0,explosion
+test_science_demo,8.0,15.0,explanation
+test_science_demo,15.0,20.0,explanation
+test_science_demo,20.0,25.0,explosion
+test_science_demo,25.0,30.0,explanation
+test_science_demo,30.0,35.0,explanation
+test_science_demo,35.0,40.0,explosion

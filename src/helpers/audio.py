@@ -4,7 +4,10 @@ from typing import Tuple
 import librosa
 
 # MoviePy-based audio extraction
-from moviepy.editor import VideoFileClip
+try:
+    from moviepy.editor import VideoFileClip
+except ImportError:
+    from moviepy import VideoFileClip
 
 def extract_audio_array(path: str, sr: int = 16000) -> np.ndarray:
     """Return mono audio as float32 numpy array at target sr using MoviePy."""

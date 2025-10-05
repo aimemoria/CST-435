@@ -15,6 +15,9 @@ class WindowTensorDataset(Dataset):
         blob = torch.load(pt_path, map_location='cpu')
         self.vids = blob['vids'].float()
         self.mels = blob['mels'].float()
+        # Ensure mels has channel dimension [N, M, T] -> [N, 1, M, T]
+        if self.mels.ndim == 3:
+            self.mels = self.mels.unsqueeze(1)
         self.labels = blob['labels'].long()
 
     def __len__(self) -> int:

@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add src directory to path so imports work
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
 import io, time
 import numpy as np
 import torch

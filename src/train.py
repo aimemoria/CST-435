@@ -75,7 +75,7 @@ def main():
             best_auc = va_auc
             os.makedirs(os.path.dirname(args.save_path), exist_ok=True)
             torch.save(model.state_dict(), args.save_path)
-            print(f"✓ Saved new best to {args.save_path}")
+            print(f"Saved new best to {args.save_path}")
 
 if __name__ == '__main__':
     main()

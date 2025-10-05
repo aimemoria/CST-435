@@ -42,7 +42,6 @@ def make_windows(frames: List[torch.Tensor], mel: torch.Tensor, fps: int,
     stride_f = max(int(round(stride_sec * fps)), 1)
     win_f = max(int(round(win_sec * fps)), 1)
 
-    vids, auds, centers = []
     vids, auds, centers = [], [], []
     for end_idx in range(win_f, num_frames, stride_f):
         start_idx = end_idx - win_f
